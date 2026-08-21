@@ -1,0 +1,94 @@
+ton class="tabbtn active" data-tab="hotmart">Hotmart</button>
+      <button class="tabbtn" data-tab="kiwify">Kiwify</button>
+      <button class="tabbtn" data-tab="outro">Outro checkout</button>
+    </div>
+
+    <div class="tabpanel active" id="tab-hotmart">
+      <div class="card phase wine"><h3>Rota Hotmart → Webhook → Make (ou similar) → UnniChat</h3>
+        <div class="callout info"><b>Na Hotmart:</b> o evento técnico relevante é <code>PURCHASE_APPROVED</code>. A documentação atual recomenda Webhook 2.0.0 e permite selecionar produto e evento.</div>
+        <ol>
+          <li>No Make, crie um cenário novo.</li>
+          <li>Primeiro módulo: <b>Webhooks → Custom webhook</b>. Nome sugerido: <code>hotmart_compra_aprovada_produto_x</code>.</li>
+          <li>Copie a URL gerada pelo Make.</li>
+          <li>Na Hotmart: <b>Ferramentas → Ver todas → Webhook (API e notificações) → + Cadastrar Webhook</b>.</li>
+          <li>Nome: <code>UnniChat - Compra aprovada - Produto X</code>.</li>
+          <li>Versão: <b>2.0.0</b>.</li>
+          <li>Produto: selecione somente o produto correto.</li>
+          <li>Evento: <b>Compra aprovada</b>.</li>
+          <li>URL: cole a URL do webhook do Make.</li>
+          <li>Salve e use a função de teste da Hotmart, ou dispare um evento de teste.</li>
+          <li>No Make, clique <b>Run once</b> para capturar uma amostra do JSON.</li>
+        </ol>
+        <h4>Filtro obrigatório no Make</h4>
+        <pre>event = PURCHASE_APPROVED
+E
+product.id (ou product.ucode) = SEU_PRODUTO</pre>
+        <p>Mesmo que você tenha selecionado o produto no webhook, manter um filtro explícito evita disparos acidentais quando alguém altera a configuração no futuro.</p>
+      </div>
+    </div>
+
+    <div class="tabpanel" id="tab-kiwify">
+      <div class="card phase wine"><h3>Rota Kiwify → Webhook → Make (ou similar) → UnniChat</h3>
+        <ol>
+          <li>No Make, crie um cenário novo.</li>
+          <li>Primeiro módulo: <b>Webhooks → Custom webhook</b>.</li>
+          <li>Copie a URL do webhook.</li>
+          <li>Na Kiwify: <b>Apps → Webhooks → Criar Webhook</b>.</li>
+          <li>Escolha o produto correto.</li>
+          <li>Escolha o evento de <b>compra/venda aprovada</b>.</li>
+          <li>Cole a URL do Make.</li>
+          <li>Crie o webhook.</li>
+          <li>Faça o teste e deixe o Make em <b>Run once</b> para capturar o JSON.</li>
+        </ol>
+        <div class="callout info"><b>A Kiwify envia o webhook em JSON.</b> Você precisa mapear nome, e-mail, telefone, pedido e produto para a etapa seguinte.</div>
+      </div>
+    </div>
+
+    <div class="tabpanel" id="tab-outro">
+      <div class="card phase wine"><h3>Rota genérica</h3>
+        <ol><li>Procure no checkout por <b>Webhooks</b>, <b>Postback</b>, <b>Integrações</b> ou <b>API</b>.</li><li>Crie um webhook para o evento equivalente a <b>pagamento aprovado</b>.</li><li>Envie para um webhook do Make.</li><li>Capture uma amostra.</li><li>Filtre status + produto.</li><li>Mapeie telefone, nome, e-mail e ID do pedido.</li></ol>
+      </div>
+    </div>
+
+    <div class="card phase teal"><h3>Etapa comum: Make → UnniChat</h3>
+      <p>O UnniChat divulga integrações via API e Webhooks, mas a documentação pública que consultamos não expõe um endpoint estável com esquema suficiente para eu lhe passar um URL de API sem risco de inventar. Faça assim:</p>
+      <ol>
+        <li>No UnniChat, procure por <b>Integrações</b>, <b>API</b>, <b>Webhooks</b> ou <b>Developer/API</b>.</li>
+        <li>Se houver uma ação nativa do tipo “criar/atualizar contato” + “aplicar tag”, use-a.</li>
+        <li>Se não houver, peça ao suporte o endpoint e a autenticação exatos para <b>upsert de contato por telefone</b> e <b>aplicação de tag</b>.</li>
+      </ol>
+      <div class="copybox">Olá! Estou implementando um onboarding disparado por compra aprovada. Preciso receber um webhook externo e, pelo telefone do comprador, criar ou atualizar o contato e aplicar a tag #COMPRA-APROVADA. Qual é o endpoint/API ou método recomendado no UnniChat? Preciso também do formato de autenticação, payload mínimo e orientação para aplicar uma tag no mesmo contato.<button class="copybtn">Copiar</button></div>
+      <h4>Mapeamento que a integração deve produzir</h4>
+      <table><thead><tr><th>Origem do checkout</th><th>Destino no UnniChat</th></tr></thead><tbody>
+        <tr><td>Nome do comprador</td><td>Nome do contato</td></tr>
+        <tr><td>Telefone</td><td>Telefone WhatsApp em formato internacional</td></tr>
+        <tr><td>E-mail</td><td>E-mail do contato</td></tr>
+        <tr><td>Transação / order id</td><td>Campo do pedido usado no <code>{{1}}</code></td></tr>
+        <tr><td>Compra aprovada</td><td>Aplicar tag <code>#COMPRA-APROVADA</code></td></tr>
+      </tbody></table>
+      <div class="callout danger"><b>Telefone é o ponto mais sensível.</b> Não concatene <code>+55</code> cegamente se você vende fora do Brasil. Normalize o telefone para o padrão internacional de acordo com o país do checkout.</div>
+    </div>
+  </section>
+
+  <section id="upsell">
+    <h2 class="section-title">10. A segunda integração: quando o upsell for comprado, aplique a tag de bloqueio</h2>
+    <p class="lead">Sem esta segunda automação, a condicional das 12 horas nunca saberá que a pessoa comprou o upsell — e você poderá oferecer de novo para quem já pagou.</p>
+    <div class="card phase gold">
+      <h3>Faça um segundo webhook/integração para o produto de upsell</h3>
+      <ol>
+        <li>Crie outra automação no checkout, agora filtrada pelo <b>produto do upsell</b>.</li>
+        <li>Evento: compra aprovada.</li>
+        <li>Encontre/crie o mesmo contato no UnniChat pelo telefone.</li>
+        <li>Aplique a tag <code>UPSELL-COMPRA-APROVADA</code>.</li>
+        <li>Não precisa iniciar outro fluxo para a lógica básica; a tag já basta para a condicional.</li>
+      </ol>
+      <div class="check"><input type="checkbox" data-check="ups1" id="ups1"><label for="ups1">Compra aprovada do upsell aplica <code>UPSELL-COMPRA-APROVADA</code> no mesmo contato.</label></div>
+    </div>
+  </section>
+
+  <section id="teste">
+    <h2 class="section-title">11. Testes — faça nesta ordem exata</h2>
+    <p class="lead">A maioria dos problemas é muito mais fácil de resolver quando você testa de dentro para fora.</p>
+    <div class="card">
+      <h3>Teste A — só UnniChat, sem checkout</h3>
+      <div class="check"><input type="checkbox" data-check="ta1" id="ta1"><label for="ta1">Criei um contato d

@@ -1,0 +1,71 @@
+sim</summary><ol><li>Abra o contato e confirme se a tag <code>UPSELL-COMPRA-APROVADA</code> está presente.</li><li>Confira se o webhook do upsell identifica o mesmo contato.</li><li>Confira grafia exata da tag na condicional.</li><li>Veja se a tag chegou antes da condicional de 12 h.</li></ol></details>
+    <details><summary>O mesmo cliente entra no fluxo duas vezes</summary><ol><li>Veja se o checkout reenviou o webhook.</li><li>Veja se a tag está sendo removida e reaplicada.</li><li>Use o ID único do evento/transação para idempotência na integração, se possível.</li><li>Se o UnniChat tiver opção de limitar uma execução por contato, use conforme sua estratégia.</li></ol></details>
+  </section>
+
+  <section id="producao">
+    <h2 class="section-title">14. Depois que o MVP funcionar: deixe a automação robusta</h2>
+    <div class="grid-2">
+      <div class="card"><h3>Idempotência</h3><p>Um mesmo webhook pode ser reenviado. Guarde/compare o ID do evento ou da transação para evitar duplicidade.</p></div>
+      <div class="card"><h3>Reembolso e chargeback</h3><p>Crie fluxos separados para revogar acessos, remover tags ou alertar equipe quando fizer sentido.</p></div>
+      <div class="card"><h3>Não interagiu</h3><p>Somente depois do MVP, crie uma lógica explícita para a tag <code>#COMPRA-APROVADA-NAO-INTERAGIU</code>: aguardar, checar ausência da tag de interação e executar um template de recuperação apropriado.</p></div>
+      <div class="card"><h3>Logs</h3><p>Registre compra, telefone normalizado, tag aplicada, data de início do fluxo, clique e compra do upsell.</p></div>
+      <div class="card"><h3>Consentimento e política</h3><p>Garanta que seu uso do WhatsApp, especialmente mensagens de marketing, respeite opt-in, políticas da Meta e legislação aplicável.</p></div>
+      <div class="card"><h3>Métricas</h3><p>Meça entrega do template, clique em “Ver detalhes”, chegada ao upsell, clique no checkout e compra do upsell.</p></div>
+    </div>
+    <div class="kpi">
+      <div><b>Entrega</b><span>template entregue / tentativas</span></div><div><b>CTR</b><span>cliques em “Ver detalhes” / entregues</span></div><div><b>Upsell CTR</b><span>cliques / contatos ofertados</span></div><div><b>CVR</b><span>compras upsell / contatos ofertados</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Sequência de execução recomendada para você fazer agora</h2>
+    <div class="card phase wine">
+      <ol>
+        <li><b>Hoje:</b> conecte/valide o número do WhatsApp e crie as tags.</li>
+        <li>Crie e envie o template HSM para aprovação.</li>
+        <li>Enquanto aguarda, construa todos os blocos do fluxo.</li>
+        <li>Quando o template estiver aprovado, teste manualmente aplicando a tag no seu contato.</li>
+        <li>Depois crie o webhook de compra principal.</li>
+        <li>Depois crie o webhook do upsell.</li>
+        <li>Faça teste ponta a ponta com delays reduzidos.</li>
+        <li>Volte os delays reais e publique.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="fontes">
+    <h2 class="section-title">15. Fontes e pontos de verificação</h2>
+    <div class="card">
+      <ul>
+        <li><b>Seu fluxo de referência:</b> https://fluxo-onboarding-compra-aprovada.pages.dev/</li>
+        <li><b>UnniChat — site oficial:</b> https://lp.unnichat.com.br/lp</li>
+        <li><b>Tutorial oficial — “Como Criar um Fluxo de Automação no UnniChat”:</b> https://www.youtube.com/watch?v=J2aMGmFlbGs</li>
+        <li><b>Hotmart — Webhook:</b> https://help.hotmart.com/pt-br/article/360001491352/como-configurar-a-api-do-meu-produto-usando-o-webhook-postback-</li>
+        <li><b>Hotmart Developers — eventos de pedido 2.0.0:</b> https://developers.hotmart.com/docs/pt-BR/2.0.0/webhook/purchase-webhook/</li>
+        <li><b>Kiwify — Webhooks:</b> https://ajuda.kiwify.com.br/pt-br/article/como-funcionam-os-webhooks-2ydtgl/</li>
+        <li><b>Make — Webhooks:</b> https://help.make.com/webhooks</li>
+      </ul>
+      <p><b>Nota de precisão:</b> o UnniChat confirma publicamente suporte a automações, API e webhooks, mas a documentação pública encontrada não fornece um endpoint estável e completo para “criar/atualizar contato + aplicar tag”. Por isso, este manual não inventa URL, token ou payload. Essa parte deve ser preenchida com a documentação do seu painel ou com o suporte do UnniChat.</p>
+    </div>
+  </section>
+
+  <div class="footer">Manual criado para implementação prática do fluxo fornecido. Este arquivo é autônomo, responsivo e imprimível. Os checkboxes e campos de projeto são salvos localmente no navegador.</div>
+</main>
+</div>
+<div class="sticky-tools"><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div>
+<script>
+(function(){
+  const checks=[...document.querySelectorAll('[data-check]')];
+  checks.forEach(c=>{
+    const key='unniguide-check-'+c.dataset.check;
+    c.checked=localStorage.getItem(key)==='1'; updateDone(c);
+    c.addEventListener('change',()=>{localStorage.setItem(key,c.checked?'1':'0');updateDone(c);updateProgress();});
+  });
+  function updateDone(c){c.closest('.check')?.classList.toggle('done',c.checked)}
+  window.updateProgress=function(){const done=checks.filter(c=>c.checked).length;const pct=checks.length?Math.round(done/checks.length*100):0;document.getElementById('progress').style.width=pct+'%';document.getElementById('progressText').textContent=pct+'%';}
+  updateProgress();
+  document.querySelectorAll('[data-save]').forEach(inp=>{const k='unniguide-field-'+inp.dataset.save;inp.value=localStorage.getItem(k)||'';inp.addEventListener('input',()=>localStorage.setItem(k,inp.value));});
+  document.querySelectorAll('.copybtn').forEach(btn=>btn.addEventListener('click',async()=>{const box=btn.parentElement;const clone=box.cloneNode(true);clone.querySelector('.copybtn')?.remove();await navigator.clipboard.writeText(clone.innerText.trim());const old=btn.textContent;btn.textContent='Copiado ✓';setTimeout(()=>btn.textContent=old,1200);}));
+  const tabBtns=[...document.querySelectorAll('.tabbtn')];
+  tabBtns.forEach(b=>b.addEventListener('click',()=>{tabBtns.forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');}));
+  window.resetGuide=function(){if(!confirm('Zerar todos os checkboxes e campos salvos neste navegador?'))return;Object.keys(localStora

@@ -1,0 +1,58 @@
+e teste com meu número, nome e um pedido fictício.</label></div>
+      <div class="check"><input type="checkbox" data-check="ta2" id="ta2"><label for="ta2">Apliquei manualmente <code>#COMPRA-APROVADA</code>.</label></div>
+      <div class="check"><input type="checkbox" data-check="ta3" id="ta3"><label for="ta3">Recebi o template no WhatsApp.</label></div>
+      <div class="check"><input type="checkbox" data-check="ta4" id="ta4"><label for="ta4">Cliquei “Ver detalhes” e a tag de interação apareceu.</label></div>
+      <div class="check"><input type="checkbox" data-check="ta5" id="ta5"><label for="ta5">Recebi boas-vindas, imagem e mensagem seguinte.</label></div>
+    </div>
+    <div class="card">
+      <h3>Teste B — ramo “não comprou”</h3>
+      <p>Na versão de teste, reduza 2 h para 2 min e 12 h para 3 min.</p>
+      <div class="check"><input type="checkbox" data-check="tb1" id="tb1"><label for="tb1">O contato NÃO tem <code>UPSELL-COMPRA-APROVADA</code>.</label></div>
+      <div class="check"><input type="checkbox" data-check="tb2" id="tb2"><label for="tb2">A condicional caiu no ramo “não”.</label></div>
+      <div class="check"><input type="checkbox" data-check="tb3" id="tb3"><label for="tb3">Recebi áudio + delay + última oportunidade.</label></div>
+      <div class="check"><input type="checkbox" data-check="tb4" id="tb4"><label for="tb4">O clique final entregou o checkout correto.</label></div>
+    </div>
+    <div class="card">
+      <h3>Teste C — ramo “já comprou”</h3>
+      <div class="check"><input type="checkbox" data-check="tc1" id="tc1"><label for="tc1">Apliquei manualmente <code>UPSELL-COMPRA-APROVADA</code> antes da condicional.</label></div>
+      <div class="check"><input type="checkbox" data-check="tc2" id="tc2"><label for="tc2">A condicional caiu no ramo “sim”.</label></div>
+      <div class="check"><input type="checkbox" data-check="tc3" id="tc3"><label for="tc3">Não recebi a oferta de última oportunidade.</label></div>
+    </div>
+    <div class="card">
+      <h3>Teste D — webhook do checkout</h3>
+      <div class="check"><input type="checkbox" data-check="td1" id="td1"><label for="td1">O webhook chega ao Make.</label></div>
+      <div class="check"><input type="checkbox" data-check="td2" id="td2"><label for="td2">Filtro reconhece exatamente compra aprovada + produto correto.</label></div>
+      <div class="check"><input type="checkbox" data-check="td3" id="td3"><label for="td3">Contato aparece/atualiza no UnniChat com telefone correto.</label></div>
+      <div class="check"><input type="checkbox" data-check="td4" id="td4"><label for="td4">A tag <code>#COMPRA-APROVADA</code> é aplicada automaticamente.</label></div>
+    </div>
+    <div class="card">
+      <h3>Teste E — ponta a ponta</h3>
+      <p>Faça uma compra real de baixo risco ou use um modo de teste oferecido pela plataforma. Confira o encadeamento inteiro.</p>
+      <div class="check"><input type="checkbox" data-check="te1" id="te1"><label for="te1">Compra principal aprovada → template chegou.</label></div>
+      <div class="check"><input type="checkbox" data-check="te2" id="te2"><label for="te2">Clique → onboarding chegou.</label></div>
+      <div class="check"><input type="checkbox" data-check="te3" id="te3"><label for="te3">Compra do upsell → tag de upsell apareceu.</label></div>
+      <div class="check"><input type="checkbox" data-check="te4" id="te4"><label for="te4">Última oferta foi suprimida para quem já comprou.</label></div>
+    </div>
+  </section>
+
+  <section id="publicar">
+    <h2 class="section-title">12. Checklist antes de publicar para clientes reais</h2>
+    <div class="card phase green">
+      <div class="check"><input type="checkbox" data-check="pub1" id="pub1"><label for="pub1">Voltei os delays de teste para <b>2 horas</b>, <b>12 horas</b> e <b>1 minuto</b>.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub2" id="pub2"><label for="pub2">Todos os links foram clicados no celular e abrem o destino correto.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub3" id="pub3"><label for="pub3">Template HSM está aprovado e suas variáveis estão mapeadas.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub4" id="pub4"><label for="pub4">O fluxo não continua se a pessoa não clicar no botão inicial.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub5" id="pub5"><label for="pub5">Webhook principal está filtrado pelo produto correto.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub6" id="pub6"><label for="pub6">Webhook do upsell aplica a tag correta.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub7" id="pub7"><label for="pub7">O ramo “sim, comprou” não envia a oferta final.</label></div>
+      <div class="check"><input type="checkbox" data-check="pub8" id="pub8"><label for="pub8">Tenho como consultar logs/histórico do webhook e da automação.</label></div>
+    </div>
+  </section>
+
+  <section id="problemas">
+    <h2 class="section-title">13. Se algo der errado, diagnostique por sintoma</h2>
+    <details><summary>Compra aprovada, mas nada acontece no UnniChat</summary><ol><li>Veja o histórico do webhook no checkout.</li><li>Confira se o Make recebeu o evento.</li><li>Confira se o filtro não bloqueou.</li><li>Confira se o módulo final realmente criou/atualizou o contato.</li><li>Confira se a tag foi aplicada.</li></ol></details>
+    <details><summary>A tag aparece, mas o template não chega</summary><ol><li>Confirme se a automação está publicada/ativa.</li><li>Confirme que o gatilho usa a mesma tag, com a mesma grafia.</li><li>Veja se o template está aprovado.</li><li>Confirme número e DDI.</li><li>Veja logs de erro do canal WhatsApp.</li></ol></details>
+    <details><summary>Template chega, mas clicar no botão não continua</summary><ol><li>Confirme se o botão é de resposta rápida.</li><li>Confira se o ramo do botão está conectado ao bloco de “adicionar tag”.</li><li>Veja se o construtor criou um bloco solto/desconectado.</li></ol></details>
+    <details><summary>As primeiras mensagens chegam, mas as de horas depois não</summary><ol><li>Confirme se o clique inicial realmente abriu uma janela de atendimento.</li><li>Confirme os delays.</li><li>Veja se o contato entrou em algum bloco de saída/encerramento.</li><li>Cheque logs e erros de janela de 24 horas.</li></ol></details>
+    <details><summary>Quem comprou o upsell recebe a última oferta mesmo as

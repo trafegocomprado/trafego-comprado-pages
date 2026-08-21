@@ -1,0 +1,77 @@
+mpresa.</label></div>
+    </div>
+    <div class="callout danger"><b>Se o checkout não envia telefone, pare aqui.</b> WhatsApp precisa de telefone. Você até pode localizar um contato por e-mail em algumas integrações, mas o disparo final sempre precisa de um número válido no padrão internacional.</div>
+  </section>
+
+  <section id="unnichat-base">
+    <h2 class="section-title">6. Preparar o UnniChat antes de desenhar as mensagens</h2>
+    <p class="lead">Os nomes exatos de menu podem sofrer pequenas mudanças de interface. Procure por <b>Automações</b>, <b>Contatos/CRM</b>, <b>Tags</b> e <b>Templates</b>. O tutorial oficial do UnniChat mostra que o construtor trabalha com gatilhos, mensagens, condicionais, atrasos, HTTP e ações de contato.</p>
+
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Crie as tags principais</h3>
+      <p>No gerenciamento de contatos/tags, crie exatamente:</p>
+      <div class="copybox">#COMPRA-APROVADA
+#COMPRA-APROVADA-NAO-INTERAGIU
+#COMPRA-APROVADA-INTERAGIU-BTN-ONBOARDING-01
+UPSELL-COMPRA-APROVADA<button class="copybtn">Copiar</button></div>
+      <div class="check"><input type="checkbox" data-check="tag1" id="tag1"><label for="tag1">As quatro tags acima existem no UnniChat.</label></div>
+      <div class="callout info"><b>Para o primeiro MVP:</b> use <code>#COMPRA-APROVADA</code> como gatilho. A tag <code>#COMPRA-APROVADA-NAO-INTERAGIU</code> aparece no desenho original, mas o desenho não mostra quem a aplica. Não invente essa parte agora; implemente a recuperação de “não interagiu” depois que o fluxo principal estiver estável.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Crie ou identifique os campos que virão da compra</h3>
+      <p>Você precisa conseguir carregar no contato pelo menos estes dados:</p>
+      <table><thead><tr><th>Dado</th><th>Para quê</th><th>Exemplo</th></tr></thead><tbody>
+        <tr><td>Nome / primeiro nome</td><td>Personalização</td><td>Marcilio</td></tr>
+        <tr><td>Telefone</td><td>Identificar e enviar WhatsApp</td><td>+5511999999999</td></tr>
+        <tr><td>E-mail</td><td>Identidade auxiliar</td><td>cliente@exemplo.com</td></tr>
+        <tr><td>ID / transação</td><td>Variável <code>{{1}}</code> do template</td><td>HP123...</td></tr>
+        <tr><td>Produto / ID do produto</td><td>Evitar disparo para produto errado</td><td>Produto X</td></tr>
+      </tbody></table>
+      <p>Se o UnniChat permitir campos personalizados, crie algo como <code>pedido_id</code>, <code>produto_origem</code> e <code>plataforma_compra</code>. Se não permitir, pelo menos garanta nome, telefone e uma forma de mapear a transação no template.</p>
+    </div></div>
+  </section>
+
+  <section id="template">
+    <h2 class="section-title">7. Criar o template HSM que inicia a conversa</h2>
+    <div class="callout info"><b>Por que existe template aqui?</b> A compra é um evento externo. Normalmente o comprador não acabou de mandar mensagem para o seu WhatsApp. Portanto, você não deve começar com texto livre; use um template aprovado.</div>
+
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Crie um template estritamente transacional</h3>
+      <p>Nome sugerido: <code>compra_aprovada_acesso</code>. Idioma: <code>pt_BR</code>. Categoria sugerida: <b>Utility/Utilidade</b>, porque a mensagem comunica uma atualização de uma transação já realizada. A decisão final de categoria/aprovação é da Meta.</p>
+      <p>Estrutura recomendada:</p>
+      <pre>Corpo:
+Aviso sobre o pedido {{1}}.
+Olá, {{2}}. Seu acesso ao [PRODUTO] foi liberado.
+Toque abaixo para ver os detalhes.
+
+Botão de resposta rápida:
+Ver detalhes</pre>
+      <div class="callout warn"><b>Não coloque a oferta do upsell no template inicial.</b> Se você misturar “seu acesso foi liberado” com promoção/oferta, aumenta a chance de o template ser tratado como Marketing. Deixe o primeiro template claramente ligado à compra.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Use resposta rápida no botão</h3>
+      <p>O botão <b>“Ver detalhes”</b> deve produzir uma resposta/interação do usuário, para que o fluxo continue pelo ramo do botão e você tenha uma janela de atendimento aberta para as próximas mensagens.</p>
+      <div class="mock"><div class="mock-top">Representação conceitual — não é screenshot do painel</div><div class="mock-body"><div class="mock-panel"><b>Template: compra_aprovada_acesso</b><div class="box">Corpo com {{1}} = pedido e {{2}} = nome</div><div class="button">Ver detalhes</div></div></div></div>
+    </div></div>
+
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Espere aprovação antes de seguir para o teste real</h3>
+      <p>No construtor do UnniChat, selecione o template já aprovado e mapeie:</p>
+      <ul><li><code>{{1}}</code> → ID/transação/pedido.</li><li><code>{{2}}</code> → primeiro nome do comprador.</li></ul>
+      <div class="check"><input type="checkbox" data-check="tpl1" id="tpl1"><label for="tpl1">Template criado e aprovado.</label></div>
+      <div class="check"><input type="checkbox" data-check="tpl2" id="tpl2"><label for="tpl2">Botão “Ver detalhes” é de resposta rápida e está ligado ao próximo bloco.</label></div>
+    </div></div>
+  </section>
+
+  <section id="fluxo">
+    <h2 class="section-title">8. Montar o fluxo no construtor do UnniChat — bloco por bloco</h2>
+    <p class="lead">Agora você replica a lógica do desenho. Não conecte Hotmart/Kiwify ainda. Primeiro faça o fluxo funcionar aplicando a tag manualmente em um contato de teste.</p>
+
+    <div class="card phase navy">
+      <h3>Fluxo completo que vamos montar</h3>
+      <div class="flow">
+        <div class="node"><div class="n">Gatilho</div><b>tag compra aprovada</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">HSM</div><b>Ver detalhes</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Ação</div><b>tag interagiu</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Mensagem</div><b>boas-vindas</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Imagem</div><b>oportunidade</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Delay</div><b>2 horas</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Oferta</div><b>membros ativos</b></div><div class="arrow">→</div>
+        <div class="no
