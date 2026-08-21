@@ -27,8 +27,62 @@
         if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
         parts.push(await response.text());
       }
-      const html = parts.join('');
+      let html = parts.join('');
       if (!html.includes('<!doctype html>') || !html.includes('</html>')) throw new Error('Conteúdo incompleto');
+
+      html = html.replace(
+        '<div class="sticky-tools"><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div>',
+        '<div class="sticky-tools"><button id="saveProgressBtn" onclick="saveGuide()">Salvar progresso</button><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div>'
+      );
+
+      html = html.replace(
+        '<div class="mini">Dica: marque as caixas ao longo do manual. O navegador salva seu progresso localmente.</div>',
+        '<div class="mini">Dica: marque as caixas ao longo do manual. O navegador salva seu progresso localmente.<br><span id="lastSavedStatus">Nenhum salvamento manual ainda.</span></div>'
+      );
+
+      const saveEnhancement = `
+<script>
+(function(){
+  function updateManualSaveStatus(){
+    const el=document.getElementById('lastSavedStatus');
+    if(!el)return;
+    const raw=localStorage.getItem('unniguide-last-saved');
+    if(!raw){el.textContent='Nenhum salvamento manual ainda.';return;}
+    const d=new Date(raw);
+    el.textContent='Último salvamento: '+d.toLocaleString('pt-BR')+' · neste navegador';
+  }
+
+  window.saveGuide=function(){
+    document.querySelectorAll('[data-check]').forEach(c=>{
+      localStorage.setItem('unniguide-check-'+c.dataset.check,c.checked?'1':'0');
+    });
+    document.querySelectorAll('[data-save]').forEach(inp=>{
+      localStorage.setItem('unniguide-field-'+inp.dataset.save,inp.value);
+    });
+    localStorage.setItem('unniguide-saved-scroll',String(Math.max(0,Math.round(window.scrollY))));
+    localStorage.setItem('unniguide-last-saved',new Date().toISOString());
+    updateManualSaveStatus();
+    const btn=document.getElementById('saveProgressBtn');
+    if(btn){
+      const old=btn.textContent;
+      btn.textContent='Salvo ✓';
+      btn.disabled=true;
+      setTimeout(()=>{btn.textContent=old;btn.disabled=false;},1400);
+    }
+  };
+
+  function initManualSave(){
+    updateManualSaveStatus();
+    const y=Number(localStorage.getItem('unniguide-saved-scroll')||0);
+    if(Number.isFinite(y)&&y>0){setTimeout(()=>window.scrollTo(0,y),100);}
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initManualSave,{once:true});
+  else initManualSave();
+})();
+<\/script>`;
+
+      html = html.replace('</body>', saveEnhancement+'\n</body>');
       document.open();
       document.write(html);
       document.close();
