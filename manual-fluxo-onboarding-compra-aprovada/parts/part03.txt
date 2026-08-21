@@ -1,0 +1,59 @@
+>Template HSM</b><span>“Ver detalhes”</span></div><div class="arrow">→</div>
+      <div class="node"><div class="n">Interação</div><b>Onboarding</b><span>mensagens + espera</span></div><div class="arrow">→</div>
+      <div class="node"><div class="n">Condição</div><b>Comprou upsell?</b><span>tag sim/não</span></div><div class="arrow">→</div>
+      <div class="node"><div class="n">Saída</div><b>Pós-venda ou oferta</b><span>última oportunidade</span></div>
+    </div>
+  </section>
+
+  <section id="conceitos">
+    <h2 class="section-title">2. Cinco conceitos que você precisa entender antes de clicar em qualquer coisa</h2>
+    <p class="lead">Você não precisa saber programação. Mas precisa reconhecer estas cinco peças para não montar o fluxo “de trás para frente”.</p>
+    <div class="grid-3">
+      <div class="card"><span class="pill blue">Gatilho</span><h3>O que inicia algo</h3><p>No seu caso, a venda aprovada precisa resultar na aplicação de uma tag. Essa tag inicia o fluxo.</p></div>
+      <div class="card"><span class="pill wine">Tag</span><h3>Uma etiqueta no contato</h3><p>Ex.: <code>#COMPRA-APROVADA</code>. Tags também servem para condições, como “já comprou o upsell?”.</p></div>
+      <div class="card"><span class="pill gold">Template HSM</span><h3>Mensagem pré-aprovada</h3><p>É a mensagem usada para iniciar uma conversa no WhatsApp quando não existe uma janela de atendimento aberta.</p></div>
+      <div class="card"><span class="pill green">Janela de 24 h</span><h3>Período de mensagens livres</h3><p>A janela de atendimento abre quando o cliente envia uma mensagem. Por isso, prefira um botão de resposta rápida que faça o comprador efetivamente responder.</p></div>
+      <div class="card"><span class="pill blue">Webhook</span><h3>Um aviso automático entre sistemas</h3><p>O checkout “avisa” que a compra foi aprovada. Uma integração recebe esse aviso e manda a informação para o UnniChat.</p></div>
+      <div class="card"><span class="pill wine">Condicional</span><h3>Uma pergunta com dois caminhos</h3><p>“O contato possui a tag <code>UPSELL-COMPRA-APROVADA</code>?” Sim: não ofertar. Não: ofertar.</p></div>
+    </div>
+    <div class="callout warn"><b>Regra importante do WhatsApp:</b> entregar um template não é o mesmo que o cliente responder. Para usar mensagens livres depois, o cliente precisa enviar uma mensagem/interação que abra a janela de atendimento. Por isso, no template inicial, use um botão de <b>resposta rápida</b> (“Ver detalhes”), não apenas um botão de URL, se o objetivo é continuar o fluxo com mensagens livres.</div>
+  </section>
+
+  <section id="dados">
+    <h2 class="section-title">3. Preencha primeiro os dados do seu projeto</h2>
+    <p class="lead">Use esta pequena ficha como “fonte da verdade”. Ela fica salva apenas neste navegador. Você vai consultar esses dados quando configurar mensagens e links.</p>
+    <div class="card">
+      <div class="field-grid">
+        <div class="field"><label>Nome do produto principal</label><input data-save="produto" placeholder="Ex.: Curso X"><small>Substitui {NOME_DO_PRODUTO}</small></div>
+        <div class="field"><label>Especialista</label><input data-save="especialista" placeholder="Ex.: Teacher Sandra"><small>Substitui {NOME_DO_ESPECIALISTA}</small></div>
+        <div class="field"><label>Atendente / pessoa que assina</label><input data-save="atendente" placeholder="Ex.: Ana"><small>Substitui {NOME_DO_ATENDENTE}</small></div>
+        <div class="field"><label>Plataforma de compra</label><input data-save="checkout" placeholder="Hotmart, Kiwify..."><small>Substitui {PLATAFORMA_DE_COMPRA}</small></div>
+        <div class="field"><label>Área de membros / plataforma</label><input data-save="membros" placeholder="Hotmart Club, Kiwify, plataforma própria..."><small>Substitui {NOME_DA_PLATAFORMA}</small></div>
+        <div class="field"><label>Link de acesso ao produto</label><input data-save="acesso" placeholder="https://..."><small>Substitui {LINK_DE_ACESSO}</small></div>
+        <div class="field"><label>Nome do upsell</label><input data-save="upsell" placeholder="Ex.: Análise de Perfil"><small>Usado no ramo de oferta</small></div>
+        <div class="field"><label>Checkout do upsell</label><input data-save="upsellurl" placeholder="https://..."><small>Link final da oferta</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="arquitetura">
+    <h2 class="section-title">4. Arquitetura recomendada para quem está começando</h2>
+    <div class="card phase teal">
+      <h3>Faça em duas camadas</h3>
+      <div class="grid-2">
+        <div><span class="pill blue">Camada A</span><h4>UnniChat</h4><p>Constrói as mensagens, botões, tags, atrasos e condicionais.</p><p><b>Teste primeiro manualmente.</b></p></div>
+        <div><span class="pill gold">Camada B</span><h4>Checkout → UnniChat</h4><p>Recebe a compra aprovada, encontra/cria o contato pelo telefone e aplica a tag que inicia a automação.</p><p><b>Conecte só depois do teste manual.</b></p></div>
+      </div>
+    </div>
+    <div class="callout ok"><b>Ordem que reduz muito a chance de confusão:</b> ① número WhatsApp funcionando → ② tags → ③ template aprovado → ④ fluxo completo → ⑤ teste manual → ⑥ integração de compra → ⑦ teste ponta a ponta → ⑧ publicação.</div>
+  </section>
+
+  <section id="pre">
+    <h2 class="section-title">5. Pré-requisitos — não avance sem isto</h2>
+    <div class="card">
+      <div class="check"><input type="checkbox" data-check="pre1" id="pre1"><label for="pre1"><b>Tenho uma conta UnniChat ativa</b> e consigo entrar no painel.</label></div>
+      <div class="check"><input type="checkbox" data-check="pre2" id="pre2"><label for="pre2"><b>Tenho um número conectado à API Oficial do WhatsApp</b> dentro do UnniChat.</label></div>
+      <div class="check"><input type="checkbox" data-check="pre3" id="pre3"><label for="pre3"><b>Consigo receber uma mensagem de teste</b> enviada pelo meu número/API.</label></div>
+      <div class="check"><input type="checkbox" data-check="pre4" id="pre4"><label for="pre4"><b>Tenho acesso administrativo</b> ao checkout onde a compra acontece.</label></div>
+      <div class="check"><input type="checkbox" data-check="pre5" id="pre5"><label for="pre5"><b>O checkout coleta telefone</b> do comprador. Esse dado será o identificador mais importante para o WhatsApp.</label></div>
+      <div class="check"><input type="checkbox" data-check="pre6" id="pre6"><label for="pre6"><b>Tenho um número meu para teste</b> que não é o mesmo número da e
