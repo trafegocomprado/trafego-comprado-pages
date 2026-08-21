@@ -25,7 +25,7 @@
     <div class="card">
       <div class="field-grid">
         <div class="field"><label>Nome do produto principal</label><input data-save="produto" placeholder="Ex.: Curso X"><small>Substitui {NOME_DO_PRODUTO}</small></div>
-        <div class="field"><label>Especialista</label><input data-save="especialista" placeholder="Ex.: Teacher Sandra"><small>Substitui {NOME_DO_ESPECIALISTA}</small></div>
+        <div class="field"><label>Especialista</label><input data-save="especialista" placeholder="Ex.: Nome do especialista"><small>Substitui {NOME_DO_ESPECIALISTA}</small></div>
         <div class="field"><label>Atendente / pessoa que assina</label><input data-save="atendente" placeholder="Ex.: Ana"><small>Substitui {NOME_DO_ATENDENTE}</small></div>
         <div class="field"><label>Plataforma de compra</label><input data-save="checkout" placeholder="Hotmart, Kiwify..."><small>Substitui {PLATAFORMA_DE_COMPRA}</small></div>
         <div class="field"><label>Área de membros / plataforma</label><input data-save="membros" placeholder="Hotmart Club, Kiwify, plataforma própria..."><small>Substitui {NOME_DA_PLATAFORMA}</small></div>
