@@ -1,0 +1,72 @@
+de"><div class="n">Ação</div><b>arquivar</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Delay</div><b>12 horas</b></div><div class="arrow">→</div>
+        <div class="node"><div class="n">Condição</div><b>tag upsell?</b></div>
+      </div>
+    </div>
+
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Nova automação → gatilho por tag</h3>
+      <ol><li>Abra <b>Automações</b>.</li><li>Crie uma automação nova.</li><li>Dê um nome explícito, por exemplo: <code>ONB | Compra aprovada | Produto X</code>.</li><li>No primeiro bloco, escolha gatilho de contato/tag.</li><li>Configure: <b>quando a tag <code>#COMPRA-APROVADA</code> for adicionada</b>.</li></ol>
+      <div class="callout warn"><b>Evite duplicidade.</b> Se a mesma compra reaplicar a tag várias vezes, o fluxo pode recomeçar. Se houver opção “executar uma vez por contato” ou regra equivalente, avalie ativá-la no primeiro MVP.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Adicione o template HSM</h3>
+      <ol><li>Depois do gatilho, adicione <b>Enviar template WhatsApp</b>.</li><li>Escolha <code>compra_aprovada_acesso</code>.</li><li>Mapeie pedido e nome nas variáveis.</li><li>No botão <b>Ver detalhes</b>, conecte o clique ao próximo bloco.</li></ol>
+      <p><b>Não conecte uma “continuação automática” que ignore o botão.</b> A ideia do desenho é que as boas-vindas ocorram quando o comprador interage.</p>
+    </div></div>
+
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h3>No clique do botão, adicione a tag de controle</h3>
+      <p>Adicione uma ação de contato:</p><pre>Adicionar tag:
+#COMPRA-APROVADA-INTERAGIU-BTN-ONBOARDING-01</pre>
+      <p>Essa tag prova que o usuário realmente percorreu o botão do onboarding.</p>
+    </div></div>
+
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Boas-vindas e acesso</h3>
+      <p>Adicione uma mensagem livre com quatro funções:</p>
+      <ol><li>saudação com o nome;</li><li>confirmação de que o acesso está liberado;</li><li>link de acesso;</li><li>explicação de qual login/plataforma usar.</li></ol>
+      <div class="callout ok"><b>Não complique:</b> nesta etapa o comprador quer saber “onde entro?” e “qual login uso?”. Coloque essas respostas antes de qualquer oferta.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h3>Mensagem com imagem + oportunidade adicional</h3>
+      <p>Adicione o bloco “mensagem com imagem”, carregue o criativo e inclua o link da oportunidade. Confirme que a imagem está comprimida, legível no celular e não contém promessa incoerente com a página de destino.</p>
+      <div class="check"><input type="checkbox" data-check="img1" id="img1"><label for="img1">Imagem final carregada e link testado no celular.</label></div>
+    </div></div>
+
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h3>Atraso inteligente: 2 horas</h3>
+      <p>Adicione um bloco de atraso e configure <b>2 horas</b>. Para o teste inicial, você pode temporariamente usar 2–5 minutos; depois volte para 2 horas antes de publicar.</p>
+      <div class="callout info"><b>Boa técnica de teste:</b> mantenha uma versão “TESTE” com delays curtos e uma versão “PRODUÇÃO” com delays reais. Isso evita esperar 14 horas para descobrir um erro.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">7</div><div class="step-body"><h3>Oferta “somente para membros ativos”</h3>
+      <p>Adicione a mensagem da oferta e o link/CTA correspondente. No primeiro MVP, você pode manter a copy do seu desenho, mas revise preço, destino e regras da oferta antes de publicar.</p>
+    </div></div>
+
+    <div class="step"><div class="step-num">8</div><div class="step-body"><h3>Ação de contato: arquivar conversa</h3>
+      <p>Adicione o bloco de ação <b>Arquivar conversa</b>. Isso organiza a caixa de entrada; não encerra a automação.</p>
+    </div></div>
+
+    <div class="step"><div class="step-num">9</div><div class="step-body"><h3>Atraso inteligente: 12 horas</h3>
+      <p>Adicione outro delay de <b>12 horas</b>. Somado ao delay anterior, a checagem acontecerá aproximadamente 14 horas depois da interação inicial, ainda dentro de uma janela de 24 horas se o clique do botão gerou uma mensagem do usuário.</p>
+    </div></div>
+
+    <div class="step"><div class="step-num">10</div><div class="step-body"><h3>Condicional: “já comprou o upsell?”</h3>
+      <p>Crie uma condicional com a regra:</p><pre>O contato possui a tag:
+UPSELL-COMPRA-APROVADA</pre>
+      <div class="branch"><div class="yes"><b>SIM — já comprou</b><p>Encerre este ramo ou direcione para um pós-venda. Não envie “última oportunidade”.</p></div><div class="center">OU</div><div class="no"><b>NÃO — ainda não comprou</b><p>Conecte ao áudio e à oferta final.</p></div></div>
+      <div class="callout warn"><b>Observação do desenho original:</b> a ligação exata das saídas do condicional não estava totalmente legível. A conexão acima é a interpretação lógica: comprou → não ofertar; não comprou → última oportunidade.</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">11</div><div class="step-body"><h3>Ramo “não comprou”: áudio → 1 minuto → oferta final</h3>
+      <ol><li>Adicione o áudio final.</li><li>Adicione delay de <b>1 minuto</b>.</li><li>Adicione a mensagem “última oportunidade”.</li><li>Adicione botão de resposta rápida <b>QUERO MINHA ANÁLISE</b>.</li><li>Ligue o botão à mensagem seguinte, que entrega o checkout.</li></ol>
+    </div></div>
+
+    <div class="step"><div class="step-num">12</div><div class="step-body"><h3>Resposta ao clique → checkout do upsell</h3>
+      <p>Depois que a pessoa clicar em <b>QUERO MINHA ANÁLISE</b>, envie o link real do checkout e explique o próximo passo após o pagamento.</p>
+      <div class="check"><input type="checkbox" data-check="flowdone" id="flowdone"><label for="flowdone"><b>Fluxo inteiro montado</b> e todos os blocos estão conectados.</label></div>
+    </div></div>
+  </section>
+
+  <section id="integracao">
+    <h2 class="section-title">9. Agora sim: fazer “compra aprovada” aplicar a tag no UnniChat</h2>
+    <p class="lead">Este é o pedaço externo ao fluxo. Há duas formas: integração nativa, se existir no seu painel, ou webhook + ferramenta intermediária. Para iniciantes, a camada intermediária costuma ser mais fácil de visualizar e depurar.</p>
+    <div class="tabs">
+      <but
