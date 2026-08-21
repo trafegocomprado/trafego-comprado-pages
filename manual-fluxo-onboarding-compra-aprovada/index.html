@@ -32,17 +32,21 @@
 
       html = html.replace(
         '<div class="sticky-tools"><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div>',
-        '<div class="sticky-tools"><button id="saveProgressBtn" onclick="saveGuide()">Salvar progresso</button><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div>'
+        '<div class="sticky-tools"><button id="saveProgressBtn" onclick="saveGuide()">Salvar progresso</button><button onclick="exportGuide()">Exportar progresso</button><button onclick="openImportGuide()">Importar progresso</button><button onclick="window.print()">Imprimir / PDF</button><button onclick="resetGuide()">Zerar progresso</button></div><input id="importProgressFile" type="file" accept="application/json,.json" hidden>'
       );
 
       html = html.replace(
         '<div class="mini">Dica: marque as caixas ao longo do manual. O navegador salva seu progresso localmente.</div>',
-        '<div class="mini">Dica: marque as caixas ao longo do manual. O navegador salva seu progresso localmente.<br><span id="lastSavedStatus">Nenhum salvamento manual ainda.</span></div>'
+        '<div class="mini">Dica: marque as caixas ao longo do manual. O navegador salva seu progresso localmente.<br><span id="lastSavedStatus">Nenhum salvamento manual ainda.</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"><button onclick="exportGuide()" style="border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:7px 9px;cursor:pointer">Exportar</button><button onclick="openImportGuide()" style="border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:7px 9px;cursor:pointer">Importar</button></div><div style="margin-top:7px;opacity:.8">O arquivo exportado pode conter os dados que você preencheu. Guarde-o como um arquivo privado.</div></div>'
       );
 
-      const saveEnhancement = `
+      const progressEnhancement = `
 <script>
 (function(){
+  const FORMAT='unniguide-progress';
+  const VERSION=1;
+  const MAX_FILE_BYTES=1024*1024;
+
   function updateManualSaveStatus(){
     const el=document.getElementById('lastSavedStatus');
     if(!el)return;
@@ -52,7 +56,15 @@
     el.textContent='Último salvamento: '+d.toLocaleString('pt-BR')+' · neste navegador';
   }
 
-  window.saveGuide=function(){
+  function currentCheckIds(){
+    return [...document.querySelectorAll('[data-check]')].map(c=>c.dataset.check).filter(Boolean);
+  }
+
+  function currentFieldIds(){
+    return [...document.querySelectorAll('[data-save]')].map(i=>i.dataset.save).filter(Boolean);
+  }
+
+  function persistCurrentProgress(){
     document.querySelectorAll('[data-check]').forEach(c=>{
       localStorage.setItem('unniguide-check-'+c.dataset.check,c.checked?'1':'0');
     });
@@ -61,6 +73,33 @@
     });
     localStorage.setItem('unniguide-saved-scroll',String(Math.max(0,Math.round(window.scrollY))));
     localStorage.setItem('unniguide-last-saved',new Date().toISOString());
+  }
+
+  function buildExportPayload(){
+    const checks={};
+    currentCheckIds().forEach(id=>{
+      checks[id]=localStorage.getItem('unniguide-check-'+id)==='1';
+    });
+    const fields={};
+    currentFieldIds().forEach(id=>{
+      fields[id]=localStorage.getItem('unniguide-field-'+id)||'';
+    });
+    const scrollY=Number(localStorage.getItem('unniguide-saved-scroll')||0);
+    return {
+      format:FORMAT,
+      version:VERSION,
+      exportedAt:new Date().toISOString(),
+      progress:{
+        checks:checks,
+        fields:fields,
+        scrollY:Number.isFinite(scrollY)&&scrollY>=0?scrollY:0,
+        savedAt:localStorage.getItem('unniguide-last-saved')||new Date().toISOString()
+      }
+    };
+  }
+
+  window.saveGuide=function(){
+    persistCurrentProgress();
     updateManualSaveStatus();
     const btn=document.getElementById('saveProgressBtn');
     if(btn){
@@ -71,18 +110,93 @@
     }
   };
 
-  function initManualSave(){
+  window.exportGuide=function(){
+    persistCurrentProgress();
     updateManualSaveStatus();
+    const payload=buildExportPayload();
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+    a.href=url;
+    a.download='progresso-manual-onboarding-'+stamp+'.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+
+  window.openImportGuide=function(){
+    const input=document.getElementById('importProgressFile');
+    if(input){input.value='';input.click();}
+  };
+
+  function isPlainObject(value){
+    return !!value && typeof value==='object' && !Array.isArray(value);
+  }
+
+  function validatePayload(data){
+    if(!isPlainObject(data) || data.format!==FORMAT || data.version!==VERSION) throw new Error('Este arquivo não pertence a este manual ou usa uma versão incompatível.');
+    if(!isPlainObject(data.progress) || !isPlainObject(data.progress.checks) || !isPlainObject(data.progress.fields)) throw new Error('Estrutura de progresso inválida.');
+    return data.progress;
+  }
+
+  function importProgress(progress){
+    const allowedChecks=new Set(currentCheckIds());
+    const allowedFields=new Set(currentFieldIds());
+
+    allowedChecks.forEach(id=>{
+      const value=progress.checks[id]===true;
+      localStorage.setItem('unniguide-check-'+id,value?'1':'0');
+    });
+
+    allowedFields.forEach(id=>{
+      const value=typeof progress.fields[id]==='string'?progress.fields[id]:'';
+      localStorage.setItem('unniguide-field-'+id,value.slice(0,20000));
+    });
+
+    const y=Number(progress.scrollY);
+    localStorage.setItem('unniguide-saved-scroll',String(Number.isFinite(y)&&y>=0?Math.round(y):0));
+    localStorage.setItem('unniguide-last-saved',new Date().toISOString());
+    localStorage.setItem('unniguide-imported-at',new Date().toISOString());
+  }
+
+  function initImport(){
+    const input=document.getElementById('importProgressFile');
+    if(!input)return;
+    input.addEventListener('change',async()=>{
+      const file=input.files&&input.files[0];
+      if(!file)return;
+      try{
+        if(file.size>MAX_FILE_BYTES) throw new Error('Arquivo muito grande. O limite é 1 MB.');
+        const text=await file.text();
+        const data=JSON.parse(text);
+        const progress=validatePayload(data);
+        if(!confirm('Importar este progresso substituirá o progresso salvo neste navegador. Continuar?')) return;
+        importProgress(progress);
+        alert('Progresso importado com sucesso. A página será recarregada.');
+        location.reload();
+      }catch(err){
+        alert('Não foi possível importar o progresso: '+String(err&&err.message?err.message:err));
+      }finally{
+        input.value='';
+      }
+    });
+  }
+
+  function initManualProgress(){
+    updateManualSaveStatus();
+    initImport();
     const y=Number(localStorage.getItem('unniguide-saved-scroll')||0);
     if(Number.isFinite(y)&&y>0){setTimeout(()=>window.scrollTo(0,y),100);}
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initManualSave,{once:true});
-  else initManualSave();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initManualProgress,{once:true});
+  else initManualProgress();
 })();
 <\/script>`;
 
-      html = html.replace('</body>', saveEnhancement+'\n</body>');
+      html = html.replace('</body>', progressEnhancement+'\n</body>');
       document.open();
       document.write(html);
       document.close();
